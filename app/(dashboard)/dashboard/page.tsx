@@ -6,13 +6,14 @@ import { es } from 'date-fns/locale';
 import { flagUrl } from '@/lib/utils/points';
 import PointsNotification from '@/components/dashboard/points-notification';
 import ShareButton from '@/components/dashboard/share-button';
+import type { Profile } from '@/lib/types';
 
 export default async function DashboardPage() {
   const supabase = await createClient();
   const { data: { user } } = await supabase.auth.getUser();
 
   const [profileRes, rankingRes, upcomingRes, predCountRes] = await Promise.all([
-    supabase.from('profiles').select('id, full_name, username, email, phone, is_admin, is_disqualified, disq_reason, avatar_url, created_at, updated_at').eq('id', user!.id).single(),
+    supabase.from('profiles').select('*').eq('id', user!.id).single(),
     supabase.from('ranking').select('*').eq('id', user!.id).single(),
     supabase.from('matches')
       .select('*')
@@ -25,7 +26,7 @@ export default async function DashboardPage() {
       .eq('user_id', user!.id),
   ]);
 
-  const profile   = profileRes.data;
+  const profile   = profileRes.data as Profile | null;
   const ranking   = rankingRes.data;
   const upcoming  = upcomingRes.data ?? [];
   const predCount = predCountRes.count ?? 0;

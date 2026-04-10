@@ -12,7 +12,7 @@ export default async function DashboardPage() {
   const { data: { user } } = await supabase.auth.getUser();
 
   const [profileRes, rankingRes, upcomingRes, predCountRes] = await Promise.all([
-    supabase.from('profiles').select('*').eq('id', user!.id).single(),
+    supabase.from('profiles').select('id, full_name, username, email, phone, is_admin, is_disqualified, disq_reason, avatar_url, created_at, updated_at').eq('id', user!.id).single(),
     supabase.from('ranking').select('*').eq('id', user!.id).single(),
     supabase.from('matches')
       .select('*')
